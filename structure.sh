@@ -1,3 +1,22 @@
+# Create directories for the web application
+mkdir -p apps/nftrek-web/src/{components,services,hooks,contexts,assets,utils}
+
+# Create directories for the backend
+mkdir -p packages/backend/src/{controllers,models,services,middleware}
+
+# Create directories for shared resources
+mkdir -p shared/src/{types,utils}
+
+# Create placeholder .env files and package.json for each package
+touch apps/nftrek-web/{.env,package.json} \
+      packages/backend/{.env,package.json} \
+      shared/package.json
+
+# Create a placeholder MoonRepo workspace configuration file
+touch workspace.yml
+
+# Create a standard .gitignore file
+cat > .gitignore <<EOF
 # Dependency directories
 node_modules/
 
@@ -104,3 +123,13 @@ dist
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+EOF
+
+# Initialize an empty git repository if one does not exist already
+git init
+
+# Add all files to the repository
+git add .
+
+# Commit the files
+git commit -m "Initialize NFTrek project structure"
