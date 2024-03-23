@@ -9,7 +9,7 @@ export const locationService = {
       .select("*");
 
     if (error) throw new Error(error.message);
-    return locations as Location[] as Location[];
+    return locations as Location[];
   },
 
   // Get a single location by ID
