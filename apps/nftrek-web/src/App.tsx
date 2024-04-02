@@ -10,13 +10,24 @@ import {
 // import { UnifiedWalletButton, UnifiedWalletProvider } from "@jup-ag/wallet-adapter";
 import { UnsafeBurnerWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
-import { FC, ReactNode, useMemo } from "react";
+import React,{ FC, ReactNode, useMemo, useState } from "react";
 // import './index.css'
 // import './App.css'
 // require('./App.css');
 import "@solana/wallet-adapter-react-ui/styles.css";
 
+
 const App: FC = () => {
+  const successCallback = (position: any) => {
+    console.log(position);
+  };
+  
+  const errorCallback = (error: any) => {
+    console.log(error);
+  };
+  
+  navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+  
   return (
     <Context>
       <Content />
@@ -83,8 +94,47 @@ const Context: FC<{ children: ReactNode }> = ({ children }) => {
 //     </UnifiedWalletProvider>
 //   );
 // };
+const CameraDisplay: FC = () => {
+  const [stream, setStream] = useState<MediaStream | null>(null);
+
+  React.useEffect(() => {
+    if (!stream) {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((mediaStream) => {
+          setStream(mediaStream);
+        })
+        .catch((error) => {
+          console.error("Error accessing user media:", error);
+        });
+    }
+  }, [stream]);
+
+  if (!stream) return null;
+
+  return (
+    <div>
+      <video
+        width={320}
+        height={240}
+        autoPlay
+        ref={(video) => {
+          if (video) {
+            video.srcObject = stream;
+          }
+        }}
+      />
+    </div>
+  );
+};
+
 
 const Content: FC = () => {
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+
+  const handleCameraClick = () => {
+    setIsCameraOpen(true);
+  };
   return (
     <div>
       <div style={{ width: "100%", display: "flex", justifyContent: "end" }}>
@@ -101,13 +151,16 @@ const Content: FC = () => {
           marginTop: "100px",
         }}
       >
-        <img
-          width={"250px"}
-          height={"150px"}
-          src="./images/cameraImage.png"
-          alt="Camera image"
-          style={{ cursor: "pointer" }}
-        />
+          <button onClick={handleCameraClick}>
+            <img
+              width={"250px"}
+              height={"150px"}
+              src="./images/cameraImage.png"
+              alt="Camera image"
+              style={{ cursor: "pointer" }}
+            />
+          </button>
+      {isCameraOpen && <CameraDisplay />}
         <h1 style={{ color: "black", fontSize: "30px" }}>Camera</h1>
         {/* <p style={{width: "40vw"}}>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint dicta
@@ -116,7 +169,7 @@ const Content: FC = () => {
           nostrum?
         </p> */}
         <textarea id="" name="" style={{height: "100px", width: "500px"}}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa sint adipisci dolores natus quisquam, dicta maxime distinctio vitae ut expedita dignissimos doloremque nobis. Eaque, rem unde optio ea iste impedit!
+         
         </textarea>{" "}
         <button style={{ fontSize: "30px", marginTop: "40px" }}>
           Mint as NFT
